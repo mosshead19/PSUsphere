@@ -15,7 +15,7 @@ Ross Ivan T. Venturillo
 
 Dianara Kristy D. Garciano
 
-Practice Reset
+
 
 
 
