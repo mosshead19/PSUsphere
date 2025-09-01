@@ -38,7 +38,7 @@ class OrganizationDeleteView(DeleteView):
 class OrgMemberList(ListView):
     model = OrgMember
     context_object_name = 'orgmember'
-    template_name = "orgmember.html"
+    template_name = "orgmember_list.html"
     paginate_by = 5
 
 
