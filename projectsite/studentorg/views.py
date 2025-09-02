@@ -19,6 +19,17 @@ class OrganizationList(ListView):
     template_name = 'org_list.html'
     paginate_by = 5
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                name__icontains=q
+        )   | queryset.filter(
+                description__icontains=q
+        )
+        return queryset
+
 class OrganizationCreateView(CreateView):
     model = Organization
     form_class = OrganizationForm
@@ -41,6 +52,23 @@ class OrgMemberListView(ListView):
     context_object_name = 'orgmembers'
     template_name = 'orgmember_list.html'
     paginate_by = 5
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                student__lastname__icontains=q
+            ) | queryset.filter(
+                student__firstname__icontains=q
+            ) | queryset.filter(
+                date_joined__year=q
+            ) | queryset.filter(
+                date_joined__month=q # 1-12 for Months, adjust natin next na hindi num
+            ) | queryset.filter(
+                date_joined__day=q
+            )
+        return queryset
 
 class OrgMemberCreateView(CreateView):
     model = OrgMember
@@ -66,6 +94,23 @@ class StudentListView(ListView):
     template_name = 'student_list.html'
     paginate_by = 5
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                lastname__icontains=q
+            ) | queryset.filter(
+                firstname__icontains=q 
+            ) | queryset.filter(
+                middlename__icontains=q
+            ) | queryset.filter(
+                student_id__icontains=q
+            ) | queryset.filter(
+                program__prog_name__icontains=q
+            )
+        return queryset
+
 class StudentCreateView(CreateView):
     model = Student
     fields = '__all__'
@@ -90,6 +135,13 @@ class CollegeListView(ListView):
     template_name = 'college_list.html'
     paginate_by = 5
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(college_name__icontains=q)
+        return queryset
+
 class CollegeCreateView(CreateView):
     model = College
     fields = '__all__'
@@ -113,6 +165,18 @@ class ProgramListView(ListView):
     context_object_name = 'programs'
     template_name = 'program_list.html'
     paginate_by = 5
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                prog_name__icontains=q
+            ) | queryset.filter(
+                college__college_name__icontains=q
+            )
+
+        return queryset
 
 class ProgramCreateView(CreateView):
     model = Program

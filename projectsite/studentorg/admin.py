@@ -11,11 +11,11 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(OrgMember)
 class OrgMemberAdmin(admin.ModelAdmin):
-    list_display = ("student", "get_member_program", "organization", "date_joined",)
+    list_display = ("student", "program", "organization", "date_joined",)
 
     search_fields = ("student__lastname", "student__firstname",)
 
-    def get_member_program(self, obj):
+    def program(self, obj):
         try:
             member = Student.objects.get(id=obj.student_id)
             return member.program
