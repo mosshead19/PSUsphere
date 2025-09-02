@@ -62,11 +62,11 @@ class OrgMemberListView(ListView):
             ) | queryset.filter(
                 student__firstname__icontains=q
             ) | queryset.filter(
-                date_joined__year=q
+                date_joined__year__icontains=q
             ) | queryset.filter(
-                date_joined__month=q # 1-12 for Months, adjust natin next na hindi num
+                date_joined__month__icontains=q # 1-12 for Months, adjust natin next na hindi num
             ) | queryset.filter(
-                date_joined__day=q
+                date_joined__day__icontains=q
             )
         return queryset
 
