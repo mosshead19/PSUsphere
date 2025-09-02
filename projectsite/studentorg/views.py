@@ -84,6 +84,23 @@ class StudentListView(ListView):
     template_name = 'student_list.html'
     paginate_by = 5
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                lastname__icontains=q
+            ) | queryset.filter(
+                firstname__icontains=q 
+            ) | queryset.filter(
+                middlename__icontains=q
+            ) | queryset.filter(
+                student_id__icontains=q
+            ) | queryset.filter(
+                program__prog_name__icontains=q
+            )
+        return queryset
+
 class StudentCreateView(CreateView):
     model = Student
     fields = '__all__'
