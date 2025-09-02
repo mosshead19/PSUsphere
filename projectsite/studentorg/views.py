@@ -23,7 +23,11 @@ class OrganizationList(ListView):
         queryset = super().get_queryset()
         q = self.request.GET.get('q')
         if q:
-            queryset = queryset.filter(name__icontains=q)
+            queryset = queryset.filter(
+                name__icontains=q
+        )   | queryset.filter(
+                description__icontains=q
+        )
         return queryset
 
 class OrganizationCreateView(CreateView):
@@ -57,7 +61,13 @@ class OrgMemberListView(ListView):
                 student__lastname__icontains=q
             ) | queryset.filter(
                 student__firstname__icontains=q
-            ) 
+            ) | queryset.filter(
+                date_joined__year=q
+            ) | queryset.filter(
+                date_joined__month=q # 1-12 for Months, adjust natin next na hindi num
+            ) | queryset.filter(
+                date_joined__day=q
+            )
         return queryset
 
 class OrgMemberCreateView(CreateView):
