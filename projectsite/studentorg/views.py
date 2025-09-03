@@ -67,6 +67,8 @@ class OrgMemberListView(ListView):
                 date_joined__month__icontains=q # 1-12 for Months, adjust natin next na hindi num
             ) | queryset.filter(
                 date_joined__day__icontains=q
+            ) | queryset.filter(
+                organization__name__icontains=q
             )
         return queryset
 
