@@ -7,7 +7,6 @@ and their affiliations to organizations within the university.
 
 * Adding of students and their org affiliations 
 * Searching of college, program, or student name
-* filtering 
 
 ## Authors 
 
