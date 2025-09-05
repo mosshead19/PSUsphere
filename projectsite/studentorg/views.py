@@ -27,6 +27,8 @@ class OrganizationList(ListView):
                 name__icontains=q
         )   | queryset.filter(
                 description__icontains=q
+        )   | queryset.filter(
+                college__college_name__icontains=q
         )
         return queryset
 
