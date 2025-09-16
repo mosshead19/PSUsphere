@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView,UpdateView, DeleteView
 from studentorg.models import Organization
@@ -24,11 +25,9 @@ class OrganizationList(ListView):
         q = self.request.GET.get('q')
         if q:
             queryset = queryset.filter(
-                name__icontains=q
-        )   | queryset.filter(
-                description__icontains=q
-        )   | queryset.filter(
-                college__college_name__icontains=q
+                Q(name__icontains=q)
+            |   Q(description__icontains=q)
+            |   Q(college__college_name__icontains=q)
         )
         return queryset
 
@@ -60,17 +59,12 @@ class OrgMemberListView(ListView):
         q = self.request.GET.get('q')
         if q:
             queryset = queryset.filter(
-                student__lastname__icontains=q
-            ) | queryset.filter(
-                student__firstname__icontains=q
-            ) | queryset.filter(
-                date_joined__year__icontains=q
-            ) | queryset.filter(
-                date_joined__month__icontains=q # 1-12 for Months, adjust natin next na hindi num
-            ) | queryset.filter(
-                date_joined__day__icontains=q
-            ) | queryset.filter(
-                organization__name__icontains=q
+                Q(student__lastname__icontains=q)
+             |  Q(student__firstname__icontains=q)
+             |  Q(date_joined__year__icontains=q)
+             |  Q(date_joined__month__icontains=q) # 1-12 for Months, adjust natin next na hindi num
+             |  Q(date_joined__day__icontains=q)
+             |  Q(organization__name__icontains=q)
             )
         return queryset
 
@@ -103,15 +97,11 @@ class StudentListView(ListView):
         q = self.request.GET.get('q')
         if q:
             queryset = queryset.filter(
-                lastname__icontains=q
-            ) | queryset.filter(
-                firstname__icontains=q 
-            ) | queryset.filter(
-                middlename__icontains=q
-            ) | queryset.filter(
-                student_id__icontains=q
-            ) | queryset.filter(
-                program__prog_name__icontains=q
+                Q(lastname__icontains=q)
+             |  Q(firstname__icontains=q)
+             |  Q(middlename__icontains=q)
+             |  Q(student_id__icontains=q)
+             |  Q(program__prog_name__icontains=q)
             )
         return queryset
 
@@ -175,9 +165,8 @@ class ProgramListView(ListView):
         q = self.request.GET.get('q')
         if q:
             queryset = queryset.filter(
-                prog_name__icontains=q
-            ) | queryset.filter(
-                college__college_name__icontains=q
+                Q(prog_name__icontains=q)
+             |  Q(college__college_name__icontains=q)
             )
 
         return queryset
