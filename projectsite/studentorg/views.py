@@ -48,9 +48,10 @@ class OrganizationList(ListView):
 
         if query:
             qs = qs.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query) | Q(college__college_name__icontains=query)
-        )
+            Q(name__icontains=query) 
+        |   Q(description__icontains=query) 
+        |   Q(college__college_name__icontains=query)
+    )
         return qs
 
 
@@ -89,12 +90,13 @@ class OrgMemberListView(ListView):
         q = self.request.GET.get('q')
         if q:
             qs = qs.filter(
-                Q(student__lastname__icontains=q) | 
-                Q (student__firstname__icontains=q) | 
-                Q(date_joined__year__icontains=q) |
-                Q(date_joined__month__icontains=q ) | 
-                Q(date_joined__day__icontains=q) |
-                Q (organization__name__icontains=q) )
+                Q(student__lastname__icontains=q) 
+            |   Q(student__firstname__icontains=q) 
+            |   Q(date_joined__year__icontains=q) 
+            |   Q(date_joined__month__icontains=q) 
+            |   Q(date_joined__day__icontains=q) 
+            |   Q(organization__name__icontains=q) 
+        )
             
         return qs
 
@@ -128,16 +130,11 @@ class StudentListView(ListView):
         if q:
             qs = qs.filter(
                 Q(lastname__icontains=q)
-           | Q(
-                firstname__icontains=q 
-            ) |Q(
-                middlename__icontains=q
-            ) | Q(
-                student_id__icontains=q
-            ) | Q(
-                program__prog_name__icontains=q
-            )
-            )
+            |   Q(firstname__icontains=q)
+            |   Q(middlename__icontains=q) 
+            |   Q(student_id__icontains=q)
+            |   Q(program__prog_name__icontains=q)
+        )
         return qs
 
 class StudentCreateView(CreateView):
@@ -209,7 +206,7 @@ class ProgramListView(ListView):
             qs = qs.filter(
                 Q(prog_name__icontains=q)
             | Q(college__college_name__icontains=q)
-            )
+        )
             
 
         return qs
