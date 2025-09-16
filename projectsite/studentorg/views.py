@@ -72,6 +72,13 @@ class OrgMemberListView(ListView):
     context_object_name = 'orgmembers'
     template_name = 'orgmember_list.html'
     paginate_by = 5
+    
+    def get_ordering(self):
+        allowed = ["student__lastname", "student__firstname", "date_joined"]
+        sort_by = self.request.GET.get("sort_by")
+        if sort_by in allowed:
+            return sort_by
+        return "student__lastname"
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -152,7 +159,9 @@ class CollegeListView(ListView):
         queryset = super().get_queryset()
         q = self.request.GET.get('q')
         if q:
-            queryset = queryset.filter(college_name__icontains=q)
+            queryset = queryset.filter(
+                Q(college_name__icontains=q)
+            )
         return queryset
 
 class CollegeCreateView(CreateView):
