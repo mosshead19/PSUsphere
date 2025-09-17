@@ -71,7 +71,7 @@ class OrganizationDeleteView(DeleteView):
     template_name = 'org_del.html'
     success_url = reverse_lazy('organization-list')
 
-# OrgMember Views----- TO ASK PA KAY MAAM TINE HOW EXACTLY TO PUT HERE
+
 class OrgMemberListView(ListView):
     model = OrgMember
     context_object_name = 'orgmembers'
@@ -81,9 +81,11 @@ class OrgMemberListView(ListView):
     def get_ordering(self):
         allowed = ["student__lastname", "student__firstname", "date_joined"]
         sort_by = self.request.GET.get("sort_by")
-        if sort_by in allowed:
-            return sort_by
-        return "student__lastname"
+        if sort_by == "student__lastname":
+            return ["student__lastname", "student__firstname"]
+        elif sort_by in allowed:
+            return [sort_by]
+        return ["student__lastname", "student__firstname"]
 
     def get_queryset(self):
         qs = super().get_queryset()
