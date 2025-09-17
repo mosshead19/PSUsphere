@@ -80,13 +80,18 @@ class OrgMemberListView(ListView):
 
     def get_ordering(self):
         allowed = ["student__lastname", "student__firstname", "date_joined"]
-        sort_by = self.request.GET.get("sort_by")
+        sort_by = self.request.GET.get("sort_by", "student__lastname")
+        sort_order = self.request.GET.get("sort_order", "asc")
+        if sort_by not in allowed:
+            sort_by = "student__lastname"
         if sort_by == "student__lastname":
-            return ["student__lastname", "student__firstname"]
-        elif sort_by in allowed:
-            return [sort_by]
-        return ["student__lastname", "student__firstname"]
-
+            ordering = ["student__lastname", "student__firstname"]
+        else:
+            ordering = [sort_by]
+        if sort_order == "desc":
+            ordering = ["-" + field for field in ordering]
+        return ordering
+        
     def get_queryset(self):
         qs = super().get_queryset()
         q = self.request.GET.get('q')

@@ -42,8 +42,11 @@
                         <option value="date_joined" {% if request.GET.sort_by == "date_joined" %}selected{% endif %}>Date Joined</option>
                          </select>
                         </div>
+                        <input type="hidden" name="sort_order" value="{% if request.GET.sort_order == 'desc' %}asc{% else %}desc{% endif %}">
                         <div class="col-auto">
-                            <button type="submit" class="btn btn-primary btn-sm btn-rounded">Sort</button>
+                            <button type="submit" class="btn btn-primary btn-sm btn-rounded">
+                                Sort {% if request.GET.sort_order == 'desc' %}{% else %}{% endif %}
+                            </button>
                         </div>
                         </form>
                     </div>
