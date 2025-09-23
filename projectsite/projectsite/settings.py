@@ -49,9 +49,9 @@ INSTALLED_APPS = [
     'widget_tweaks',
 ]
 if "pythonanywhere" in socket.gethostname():
-    SITE_ID = 2 #productionsite (rossvent.pythonanywhere.com)
+    SITE_ID = 3 #productionsite (rossvent.pythonanywhere.com)
 else:
-    SITE_ID = 1 
+    SITE_ID = 2 
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
