@@ -107,10 +107,10 @@
           {% csrf_token %}
           <div class="text-center mb-3">
             <p>Sign up with:</p>
-            <a href="{% provider_login_url 'google' %}" class="btn btn-link btn-floating mx-1">
+            <a href="{% provider_login_url 'google' process='login' auth_params='prompt=consent' %}"  class="btn btn-link btn-floating mx-1">
               <i class="fab fa-google"></i>
             </a>
-            <a href="{% provider_login_url 'github' %}" class="btn btn-link btn-floating mx-1">
+            <a href="{% provider_login_url 'github' process='login' %}" class="btn btn-link btn-floating mx-1">
               <i class="fab fa-github"></i>
             </a>
           </div>
