@@ -1,3 +1,12 @@
+import os
+import subprocess
+import logging
+
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView,UpdateView, DeleteView
@@ -9,6 +18,41 @@ from studentorg.models import OrgMember, Student, College, Program
 
 from django.db.models import Q
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt #allows external POST requests like from Git
+@require_POST #only allow POST requests, GET not allowed
+def deploy(request):
+    """
+    Secure webhook to pull from GitHub and reload the app.
+    Requires header: Authorization: Bearer <DEPLOY_TOKEN>
+    """
+    auth = request.headers.get("Authorization", "")
+    expected = f"Bearer {getattr(settings, 'DEPLOY_TOKEN', '')}"
+    if auth != expected:
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    project_dir = "/home/rossvent/PSUsphere"   # where .git is 
+    wsgi_path = "/var/www/rossvent_pythonanywhere_com_wsgi.py"
+
+    try:
+        # run git pull safely using subprocess with cwd
+        subprocess.run(["git", "pull", "origin", "main"], cwd=project_dir, check=True)
+
+        # touch the wsgi file to force reload
+        open(wsgi_path, "a").close()
+        os.utime(wsgi_path, None)
+
+    except subprocess.CalledProcessError as e:
+        logger.exception("Git pull failed")
+        return JsonResponse({"error": "git pull failed", "details": str(e)}, status=500)
+    except Exception as e:
+        logger.exception("Deploy failed")
+        return JsonResponse({"error": "deploy failed", "details": str(e)}, status=500)
+
+    return JsonResponse({"status": "Deployed successfully"})
+
 
 class HomePageView(ListView):
     model = Organization
