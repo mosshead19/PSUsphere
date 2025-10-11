@@ -29,7 +29,7 @@ def deploy(request):
     Requires header: Authorization: Bearer <DEPLOY_TOKEN>
     """
     auth = request.headers.get("Authorization", "")
-    expected = f"Bearer {getattr(settings, 'DEPLOY_TOKEN', '')}"
+    expected = f"Bearer {os.environ.get('DEPLOY_TOKEN', '')}"
     if auth != expected:
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
