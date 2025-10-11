@@ -1,0 +1,36 @@
+#name of workflow
+name: Auto Deploy to PythonAnywhere
+#(condition) runs everytime when code is push to main
+on:
+  push: 
+    branches: [ "main" ]
+#steps to do if condition is satisfied
+jobs:
+  #Job 1
+  deploy:
+    #github's own cloud
+    runs-on: ubuntu-latest
+    #strategy defines how this job will be run
+    #strategy:
+    #  max-parallel: 4
+    #  matrix:
+    #    python-version: [3.13.1]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.13.1
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.13.1"
+          
+      - name: Install Dependencies
+        run: | #run after one another 
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: PythonAnywhere Deployment 
+        run: |
+          curl -X POST "https://rossvent.pythonanywhere.com/deploy/" \
+          -H "Authorization: Bearer ${{ secrets.DEPLOY_TOKEN }}"
