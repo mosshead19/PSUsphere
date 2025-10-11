@@ -20,9 +20,10 @@ from django.db.models import Q
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
+
 # TESTING PURPOSES ONLY
-@csrf_exempt #allows external POST requests like from Git
-@require_POST #only allow POST requests, GET not allowed
+@csrf_exempt  # allows external POST requests like from GitHub
+@require_POST  # only allow POST requests, GET not allowed
 def deploy(request):
     """
     Secure webhook to pull from GitHub and reload the app.
@@ -33,36 +34,48 @@ def deploy(request):
     if auth != expected:
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
-    project_dir = "/home/rossvent/PSUsphere"   # where .git is 
+    project_dir = "/home/rossvent/PSUsphere"  # where .git is
     wsgi_path = "/var/www/rossvent_pythonanywhere_com_wsgi.py"
     venv_path = "/home/rossvent/psusenv/bin"
 
     try:
-        #1 run git pull safely using subprocess with cwd
-        subprocess.run(["git", "pull", "origin", "main"], cwd=project_dir, check=True)
-        logger.info("Git pull successful")
+        #1 Fetch latest version
+        subprocess.run(["git", "fetch"], cwd=project_dir, check=True)
+        diff = subprocess.run(
+            ["git", "diff", "--name-only", "origin/main"],
+            cwd=project_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        ).stdout
 
-        #2 install dependencies
+        #2 Pull updates
+        subprocess.run(["git", "pull", "origin", "main"], cwd=project_dir, check=True)
+        logger.info("Git pull successful.")
+
+        #3️ Install dependencies
         subprocess.run([f"{venv_path}/pip", "install", "-r", "requirements.txt"], cwd=project_dir, check=True)
         logger.info("Dependencies installed.")
 
-        #3 Apply Migrations
-        subprocess.run([f"{venv_path}/python", "manage.py", "migrate"], cwd=project_dir, check=True)
-        logger.info("Database migrated")
+        #4 Run migrations only if new ones detected
+        if "migrations/" in diff:
+            logger.info("New migration files detected. Running migrate...")
+            subprocess.run([f"{venv_path}/python", "manage.py", "migrate"], cwd=project_dir, check=True)
+        else:
+            logger.info("No new migrations detected. Skipping migrate.")
 
-        #4 touch the wsgi file to force reload
+        #5 Reload web app
         subprocess.run(["touch", wsgi_path], check=True)
         logger.info("Web app reloaded.")
 
     except subprocess.CalledProcessError as e:
-        logger.exception("Git pull failed")
-        return JsonResponse({"error": "git pull failed", "details": str(e)}, status=500)
+        logger.exception("Command failed")
+        return JsonResponse({"error": "Command failed", "details": str(e)}, status=500)
     except Exception as e:
-        logger.exception("Deploy failed")
-        return JsonResponse({"error": "deploy failed", "details": str(e)}, status=500)
+        logger.exception("Deployment failed")
+        return JsonResponse({"error": "Deployment failed", "details": str(e)}, status=500)
 
     return JsonResponse({"status": "Deployed successfully"})
-
 
 class HomePageView(ListView):
     model = Organization
