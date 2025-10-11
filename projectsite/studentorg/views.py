@@ -20,7 +20,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-
+# TESTING PURPOSES ONLY
 @csrf_exempt #allows external POST requests like from Git
 @require_POST #only allow POST requests, GET not allowed
 def deploy(request):
