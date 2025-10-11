@@ -35,14 +35,25 @@ def deploy(request):
 
     project_dir = "/home/rossvent/PSUsphere"   # where .git is 
     wsgi_path = "/var/www/rossvent_pythonanywhere_com_wsgi.py"
+    venv_path = "/home/rossvent/psusenv/bin"
 
     try:
-        # run git pull safely using subprocess with cwd
+        #1 run git pull safely using subprocess with cwd
         subprocess.run(["git", "pull", "origin", "main"], cwd=project_dir, check=True)
+        logger.info("Git pull successful")
 
-        # touch the wsgi file to force reload
+        #2 install dependencies
+        subprocess.run([f"{venv_path}/pip", "install", "-r", "requirements.txt"], cwd=project_dir, check=True)
+        logger.info("Dependencies installed.")
+
+        #3 Apply Migrations
+        subprocess.run([f"{venv_path}/python", "manage.py", "migrate"], cwd=project_dir, check=True)
+        logger.info("Database migrated")
+
+        #4 touch the wsgi file to force reload
         open(wsgi_path, "a").close()
         os.utime(wsgi_path, None)
+        logger.info("Web app reloaded.")
 
     except subprocess.CalledProcessError as e:
         logger.exception("Git pull failed")
