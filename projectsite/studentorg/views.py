@@ -51,8 +51,7 @@ def deploy(request):
         logger.info("Database migrated")
 
         #4 touch the wsgi file to force reload
-        open(wsgi_path, "a").close()
-        os.utime(wsgi_path, None)
+        subprocess.run(["touch", wsgi_path], check=True)
         logger.info("Web app reloaded.")
 
     except subprocess.CalledProcessError as e:
