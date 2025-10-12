@@ -33,7 +33,8 @@ def deploy(request):
     expected = f"Bearer {os.environ.get('DEPLOY_TOKEN', '')}"
     if auth != expected:
         return JsonResponse({"error": "Unauthorized"}, status=403)
-
+    
+    manage_dir = "/home/rossvent/PSUsphere/projectsite"  # where manage.py is
     project_dir = "/home/rossvent/PSUsphere"  # where .git is
     wsgi_path = "/var/www/rossvent_pythonanywhere_com_wsgi.py"
     venv_path = "/home/rossvent/psusenv/bin"
@@ -60,7 +61,7 @@ def deploy(request):
         #4 Run migrations only if new ones detected
         if "migrations/" in diff:
             logger.info("New migration files detected. Running migrate...")
-            subprocess.run([f"{venv_path}/python", "manage.py", "migrate"], cwd=project_dir, check=True)
+            subprocess.run([f"{venv_path}/python", "manage.py", "migrate"], cwd=manage_dir, check=True)
         else:
             logger.info("No new migrations detected. Skipping migrate.")
 
